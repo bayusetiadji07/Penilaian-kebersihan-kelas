@@ -40,7 +40,6 @@ self.addEventListener('fetch', (event) => {
         return cachedResponse;
       }
       return fetch(event.request).catch(() => {
-        // Fallback untuk navigasi offline jika diperlukan
         if (event.request.mode === 'navigate') {
           return caches.match('./index.html');
         }
