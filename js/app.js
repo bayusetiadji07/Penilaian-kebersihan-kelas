@@ -386,7 +386,7 @@ function handleAdminFormSubmit(e) {
     saveAdminConfig();
     renderHeaderInfo();
     renderDashboard();
-    showToast('Pengaturan identitas berhasil disimpan & disinkronkan!', 'success');
+    showToast('Pengaturan identitas berhasil disimpan & disinkronkan ke dashboard!', 'success');
 }
 
 function handleAddClass(e) {
@@ -416,7 +416,7 @@ function handleAddClass(e) {
     adminClassNameInput.value = '';
     adminClassWaliInput.value = '';
     adminClassZonaInput.value = '';
-    showToast('Kelas baru berhasil ditambahkan & disinkronkan!', 'success');
+    showToast('Kelas baru berhasil ditambahkan & disinkronkan ke dashboard!', 'success');
 }
 
 function handleRubricChange(event) {
@@ -469,7 +469,7 @@ function handleScoringFormSubmit(event) {
     classScoresData[currentClassId].notes = classNotesTextarea.value;
     classScoresData[currentClassId].lastUpdated = new Date().toISOString();
     saveScores(classScoresData);
-    showToast('Penilaian berhasil disimpan!', 'success');
+    showToast('Penilaian berhasil disimpan & diperbarui di dashboard!', 'success');
     handleDashboardNavClick();
 }
 

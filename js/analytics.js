@@ -1,4 +1,4 @@
-import { DAFTAR_KELAS, RUBRIK_PENILAIAN } from './rubrik-data.js';
+import { RUBRIK_PENILAIAN } from './rubrik-data.js';
 
 /**
  * Helper function: Calculates the total score for a given class ID based on the rubric.
@@ -31,10 +31,11 @@ function calculateTotalScoreInternal(classId, classScoresData) {
 /**
  * Generates a summary of all class scores, including calculated total scores and judgment status.
  * @param {object} classScoresData The full classScoresData object from localStorage.
+ * @param {Array<object>} daftarKelas The active list of classes from admin settings.
  * @returns {Array<object>} An array of class summary objects, sorted by score (descending).
  */
-export function getOverallClassSummary(classScoresData) {
-    const summary = DAFTAR_KELAS.map(kelas => {
+export function getOverallClassSummary(classScoresData, daftarKelas) {
+    const summary = daftarKelas.map(kelas => {
         const score = calculateTotalScoreInternal(kelas.id, classScoresData);
         const hasBeenJudged = classScoresData[kelas.id] && Object.keys(classScoresData[kelas.id].scores || {}).length > 0;
         return {
@@ -53,11 +54,12 @@ export function getOverallClassSummary(classScoresData) {
 /**
  * Calculates average scores per grade level.
  * @param {object} classScoresData The full classScoresData object.
+ * @param {Array<object>} daftarKelas The active list of classes.
  * @returns {object} An object where keys are grade levels ('7', '8', '9') and values are their average scores.
  */
-export function getAverageScoresPerGrade(classScoresData) {
+export function getAverageScoresPerGrade(classScoresData, daftarKelas) {
     const gradeScores = { '7': [], '8': [], '9': [] };
-    DAFTAR_KELAS.forEach(kelas => {
+    daftarKelas.forEach(kelas => {
         const score = calculateTotalScoreInternal(kelas.id, classScoresData);
         if (score > 0) {
             gradeScores[kelas.tingkat].push(score);
@@ -109,10 +111,11 @@ export function getCriterionBreakdownForClass(classId, classScoresData) {
 /**
  * Generates a CSV string of the overall class summary.
  * @param {object} classScoresData The full classScoresData object.
+ * @param {Array<object>} daftarKelas The active list of classes.
  * @returns {string} The CSV content.
  */
-export function exportToCSV(classScoresData) {
-    const summary = getOverallClassSummary(classScoresData);
+export function exportToCSV(classScoresData, daftarKelas) {
+    const summary = getOverallClassSummary(classScoresData, daftarKelas);
 
     let csvContent = "Peringkat,Kelas,Tingkat,Wali Kelas,Zona,Skor Akhir,Status Penilaian\n";
 
