@@ -363,6 +363,7 @@ function handleDashboardNavClick() {
 
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
     if (dashboardNavBtn) dashboardNavBtn.classList.add('active');
+    if (adminNavBtn) adminNavBtn.classList.remove('active');
     closeSidebar();
 }
 
@@ -563,8 +564,21 @@ document.addEventListener('DOMContentLoaded', () => {
     renderSidebarClasses();
     renderDashboard();
 
+    // Pastikan modal autentikasi admin benar-benar tertutup saat inisialisasi awal
+    if (adminAuthModal) {
+        adminAuthModal.classList.add('is-hidden');
+        adminAuthModal.setAttribute('aria-hidden', 'true');
+        adminAuthModal.style.display = 'none';
+    }
+
+    // Set tampilan awal ke Dashboard
     switchView('dashboard');
-    if (dashboardNavBtn) dashboardNavBtn.classList.add('active');
+    if (dashboardNavBtn) {
+        dashboardNavBtn.classList.add('active');
+    }
+    if (adminNavBtn) {
+        adminNavBtn.classList.remove('active');
+    }
 
     if (dashboardNavBtn) dashboardNavBtn.addEventListener('click', handleDashboardNavClick);
     if (adminNavBtn) adminNavBtn.addEventListener('click', handleAdminNavClick);
