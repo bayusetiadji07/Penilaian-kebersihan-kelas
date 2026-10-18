@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Penilaian Kebersihan - SMPN 3 Besuki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar Navigasi -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-box">
+          <i data-lucide="sparkles" class="icon-logo"></i>
+        </div>
+        <div class="header-text">
+          <h1 id="school-name">SMPN 3 Besuki</h1>
+          <p id="app-title">Lomba Kebersihan</p>
+        </div>
+      </div>
+
+      <nav class="class-nav">
+        <div class="nav-section">
+          <span class="section-label">Navigasi Utama</span>
+          <button class="nav-item active" data-target="dashboard">
+            <i data-lucide="layout-dashboard"></i>
+            <span>Dashboard Ringkasan</span>
+          </button>
+          <button class="nav-item" id="nav-btn-admin" data-target="admin">
+            <i data-lucide="settings"></i>
+            <span>Pengaturan Admin</span>
+          </button>
+        </div>
+
+        <div class="nav-section">
+          <span class="section-label">Daftar Kelas (Pilih untuk Dinilai)</span>
+          <div id="class-list-container" class="class-list">
+            <!-- Diisi via JS -->
+            <div class="loading-skeleton"></div>
+          </div>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button id="btn-export" class="btn-secondary" style="width: 100%;">
+          <i data-lucide="download"></i>
+          <span>Ekspor Rekap CSV</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Modal Verifikasi Password Admin -->
+    <div id="admin-auth-modal" class="modal-backdrop is-hidden" aria-hidden="true">
+      <div class="modal-card card" style="max-width: 400px; width: 100%; margin: auto;">
+        <div class="card-header" style="margin-bottom: 20px; padding-bottom: 12px;">
+          <div class="card-title-group">
+            <i data-lucide="lock" class="icon-gold"></i>
+            <h3>Autentikasi Admin</h3>
+          </div>
+        </div>
+        <form id="admin-auth-form" style="display: grid; gap: 16px;">
+          <p class="text-muted" style="font-size: 0.9rem;">Masukkan kata sandi administrator untuk mengakses panel pengaturan. (Sandi default: <code>admin123</code>)</p>
+          <div class="form-group">
+            <label class="form-label" for="admin-password-input">Kata Sandi</label>
+            <input type="password" id="admin-password-input" class="form-input" required placeholder="Masukkan kata sandi...">
+          </div>
+          <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 8px;">
+            <button type="button" id="btn-cancel-auth" class="btn-outline">Batal</button>
+            <button type="submit" class="btn-primary">Masuk Admin</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Konten Utama -->
+    <main class="main-content">
+      <button id="mobile-menu-toggle" class="btn-icon mobile-only" aria-label="Buka Menu">
+        <i data-lucide="menu"></i>
+      </button>
+
+      <!-- Dashboard View -->
+      <section id="view-dashboard" class="view active">
+        <div class="hero-banner">
+          <div class="hero-content">
+            <span class="badge-pill">
+              <i data-lucide="award"></i> Tahun Ajaran 2024/2025
+            </span>
+            <h2 id="dashboard-title">Ringkasan Penilaian</h2>
+            <p class="text-muted" id="dashboard-subtitle">Pantau kemajuan penilaian seluruh kelas secara transparan dan real-time.</p>
+          </div>
+          <div class="stats-overview">
+            <div class="stat-card">
+              <div class="stat-icon-wrapper">
+                <i data-lucide="check-circle-2"></i>
+              </div>
+              <div>
+                <span class="stat-label">Kelas Dinilai</span>
+                <span class="stat-value" id="stat-judged">0/12</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="leaderboard-container">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <i data-lucide="trophy" class="icon-gold"></i>
+                <h3>Peringkat Sementara Kelas Terbersih</h3>
+              </div>
+              <span class="badge-sub">Update Otomatis</span>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Peringkat</th>
+                    <th>Kelas</th>
+                    <th>Wali Kelas</th>
+                    <th>Skor Akhir</th>
+                    <th>Status / Predikat</th>
+                  </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                  <!-- Diisi via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scoring View -->
+      <section id="view-scoring" class="view">
+        <header class="view-header-scoring">
+          <div class="header-with-back">
+            <button class="btn-icon back-to-dashboard" aria-label="Kembali ke Dashboard">
+              <i data-lucide="arrow-left"></i>
+            </button>
+            <div>
+              <h2 id="scoring-class-name">Nama Kelas</h2>
+              <p class="text-muted" id="scoring-class-info">Wali Kelas: -</p>
+            </div>
+          </div>
+          <div class="score-badge">
+            <span class="label">Skor Saat Ini</span>
+            <span class="value" id="current-total-score">0.0</span>
+          </div>
+        </header>
+
+        <form id="scoring-form" class="scoring-grid">
+          <div id="rubric-container"></div>
+          
+          <div class="form-actions">
+            <div class="card comment-card">
+              <label for="class-notes" class="comment-label">
+                <i data-lucide="message-square"></i>
+                Catatan & Saran Perbaikan untuk Kelas
+              </label>
+              <textarea id="class-notes" placeholder="Berikan masukan konstruktif untuk kelas ini..."></textarea>
+            </div>
+            <div class="sticky-actions">
+              <button type="button" class="btn-outline back-to-dashboard">Batal</button>
+              <button type="submit" class="btn-primary">
+                <i data-lucide="save"></i>
+                <span>Simpan Penilaian Kelas</span>
+              </button>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <!-- Admin View -->
+      <section id="view-admin" class="view">
+        <div class="hero-banner">
+          <div class="hero-content">
+            <span class="badge-pill">
+              <i data-lucide="settings"></i> Panel Administrator Eksklusif
+            </span>
+            <h2>Pengaturan Identitas & Manajemen Kelas</h2>
+            <p class="text-muted">Kelola nama sekolah, judul lomba, tahun ajaran, serta daftar kelas yang dinilai secara fleksibel.</p>
+          </div>
+        </div>
+
+        <div class="admin-grid" style="display: grid; gap: 24px;">
+          <!-- Kartu Identitas Sekolah -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <i data-lucide="school" class="icon-gold"></i>
+                <h3>Identitas Lembaga & Lomba</h3>
+              </div>
+            </div>
+            <form id="admin-config-form" class="form-stack" style="display: grid; gap: 16px;">
+              <div class="form-group">
+                <label class="form-label" for="admin-nama-sekolah">Nama Sekolah / Lembaga</label>
+                <input type="text" id="admin-nama-sekolah" class="form-input" required placeholder="Contoh: SMPN 3 Besuki">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="admin-nama-lomba">Nama Lomba / Kegiatan</label>
+                <input type="text" id="admin-nama-lomba" class="form-input" required placeholder="Contoh: Lomba Kebersihan & Kerapian Kelas">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="admin-subjudul">Subjudul Deskripsi</label>
+                <input type="text" id="admin-subjudul" class="form-input" required placeholder="Mewujudkan Lingkungan Belajar Bersih...">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="admin-tahun-ajar">Tahun Ajaran</label>
+                <input type="text" id="admin-tahun-ajar" class="form-input" required placeholder="Contoh: 2024/2025">
+              </div>
+              <div style="margin-top: 8px;">
+                <button type="submit" class="btn-primary">
+                  <i data-lucide="save"></i>
+                  <span>Simpan Perubahan Identitas</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Kartu Manajemen Kelas -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <i data-lucide="users" class="icon-gold"></i>
+                <h3>Daftar & Manajemen Kelas Terdaftar</h3>
+              </div>
+              <span class="badge-sub">Daftar Aktif</span>
+            </div>
+            
+            <form id="admin-add-class-form" style="background: var(--background); padding: 20px; border-radius: var(--radius-sm); border: 1px solid var(--border); margin-bottom: 24px; display: grid; gap: 14px;">
+              <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text);">Tambah Kelas Baru</h4>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                <input type="text" id="admin-class-name" class="form-input" placeholder="Nama Kelas (mis: 7E)" required>
+                <input type="text" id="admin-class-wali" class="form-input" placeholder="Nama Wali Kelas & Gelar" required>
+                <input type="text" id="admin-class-zona" class="form-input" placeholder="Zona / Lokasi (mis: Gedung Barat)" required>
+                <select id="admin-class-level" class="form-input" required>
+                  <option value="7">Tingkat 7</option>
+                  <option value="8">Tingkat 8</option>
+                  <option value="9">Tingkat 9</option>
+                </select>
+              </div>
+              <div>
+                <button type="submit" id="btn-add-class" class="btn-secondary">
+                  <i data-lucide="plus-circle"></i>
+                  <span>Tambah Kelas ke Daftar</span>
+                </button>
+              </div>
+            </form>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Kelas</th>
+                    <th>Tingkat</th>
+                    <th>Wali Kelas</th>
+                    <th>Zona / Gedung</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-class-table-body">
+                  <!-- Diisi via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast-container"></div>
+
+  <script type="module" src="js/app.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

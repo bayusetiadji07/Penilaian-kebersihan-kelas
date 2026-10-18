@@ -1,0 +1,17 @@
+{
+  "name": "Lomba Kebersihan SMPN 3 Besuki",
+  "short_name": "Kebersihan SMPN 3",
+  "description": "Aplikasi Penilaian Lomba Kebersihan dan Kerapian Kelas SMPN 3 Besuki",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#2563eb",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "assets/icons.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
