@@ -62,8 +62,8 @@ function loadAdminConfig() {
         if (stored) {
             const parsed = JSON.parse(stored);
             if (parsed.v === 1) {
-                if (parsed.dataSekolah) activeDataSekolah = parsed.dataSekolah;
-                if (parsed.daftarKelas) activeDaftarKelas = parsed.daftarKelas;
+                if (parsed.dataSekolah) activeDataSekolah = { ...DEFAULT_DATA_SEKOLAH, ...parsed.dataSekolah };
+                if (parsed.daftarKelas && Array.isArray(parsed.daftarKelas)) activeDaftarKelas = [...parsed.daftarKelas];
             }
         }
     } catch (e) {
@@ -171,11 +171,17 @@ function getScoreBadge(score) {
 // --- Render Functions ---
 
 function renderHeaderInfo() {
-    schoolNameEl.textContent = activeDataSekolah.namaSekolah;
-    appTitleEl.textContent = activeDataSekolah.namaLomba;
+    if (schoolNameEl) schoolNameEl.textContent = activeDataSekolah.namaSekolah;
+    if (appTitleEl) appTitleEl.textContent = activeDataSekolah.namaLomba;
+    const dashboardTahunAjarEl = document.getElementById('dashboard-tahun-ajar');
+    if (dashboardTahunAjarEl) {
+        dashboardTahunAjarEl.innerHTML = `<i data-lucide="award"></i> Tahun Ajaran ${activeDataSekolah.tahunAjar}`;
+        lucide.createIcons();
+    }
 }
 
 function renderSidebarClasses() {
+    if (!classListContainer) return;
     classListContainer.innerHTML = '';
     activeDaftarKelas.forEach(kelas => {
         const classItem = document.createElement('button');
@@ -194,36 +200,38 @@ function renderSidebarClasses() {
 }
 
 function renderDashboard() {
-    dashboardTitleEl.textContent = TEKS_UX.panduanPenjuryan.judul;
-    dashboardSubtitleEl.textContent = TEKS_UX.panduanPenjuryan.petunjuk.join(' ');
+    if (dashboardTitleEl) dashboardTitleEl.textContent = TEKS_UX.panduanPenjuryan.judul;
+    if (dashboardSubtitleEl) dashboardSubtitleEl.textContent = TEKS_UX.panduanPenjuryan.petunjuk.join(' ');
 
     const classSummary = getOverallClassSummary(classScoresData, activeDaftarKelas);
     let judgedClassesCount = classSummary.filter(c => c.hasBeenJudged).length;
 
-    statJudgedEl.textContent = `${judgedClassesCount}/${activeDaftarKelas.length}`;
+    if (statJudgedEl) statJudgedEl.textContent = `${judgedClassesCount}/${activeDaftarKelas.length}`;
 
-    leaderboardBody.innerHTML = '';
-    classSummary.forEach((data, index) => {
-        const badge = getScoreBadge(data.score);
-        const statusText = data.hasBeenJudged ? badge.lencana : 'Belum Dinilai';
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${data.score > 0 ? index + 1 : '-'}</td>
-            <td><strong>${data.nama}</strong></td>
-            <td>${data.waliKelas}</td>
-            <td><strong>${data.score > 0 ? data.score.toFixed(1) : '-'}</strong></td>
-            <td><span class="status-badge status-${statusText.toLowerCase().replace(/[^a-z0-9]/g, '')}">${statusText}</span></td>
-        `;
-        leaderboardBody.appendChild(row);
-    });
+    if (leaderboardBody) {
+        leaderboardBody.innerHTML = '';
+        classSummary.forEach((data, index) => {
+            const badge = getScoreBadge(data.score);
+            const statusText = data.hasBeenJudged ? badge.lencana : 'Belum Dinilai';
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${data.score > 0 ? index + 1 : '-'}</td>
+                <td><strong>${data.nama}</strong></td>
+                <td>${data.waliKelas}</td>
+                <td><strong>${data.score > 0 ? data.score.toFixed(1) : '-'}</strong></td>
+                <td><span class="status-badge status-${statusText.toLowerCase().replace(/[^a-z0-9]/g, '')}">${statusText}</span></td>
+            `;
+            leaderboardBody.appendChild(row);
+        });
+    }
 }
 
 function renderScoringForm(classId) {
     const kelas = activeDaftarKelas.find(k => k.id === classId);
-    if (!kelas) return;
+    if (!kelas || !rubricContainer) return;
 
-    scoringClassNameEl.textContent = kelas.nama;
-    scoringClassInfoEl.textContent = `Wali Kelas: ${kelas.waliKelas} | Zona: ${kelas.zona}`;
+    if (scoringClassNameEl) scoringClassNameEl.textContent = kelas.nama;
+    if (scoringClassInfoEl) scoringClassInfoEl.textContent = `Wali Kelas: ${kelas.waliKelas} | Zona: ${kelas.zona}`;
 
     if (!classScoresData[classId]) {
         classScoresData[classId] = { scores: {}, notes: '' };
@@ -269,21 +277,27 @@ function renderScoringForm(classId) {
         rubricContainer.appendChild(categorySection);
     });
 
-    classNotesTextarea.value = currentNotes;
+    if (classNotesTextarea) classNotesTextarea.value = currentNotes;
     updateCurrentTotalScore();
     lucide.createIcons();
 }
 
 function renderAdminSettings() {
-    document.getElementById('admin-nama-sekolah').value = activeDataSekolah.namaSekolah;
-    document.getElementById('admin-nama-lomba').value = activeDataSekolah.namaLomba;
-    document.getElementById('admin-subjudul').value = activeDataSekolah.subjudul;
-    document.getElementById('admin-tahun-ajar').value = activeDataSekolah.tahunAjar;
+    const elNamaSekolah = document.getElementById('admin-nama-sekolah');
+    const elNamaLomba = document.getElementById('admin-nama-lomba');
+    const elSubjudul = document.getElementById('admin-subjudul');
+    const elTahunAjar = document.getElementById('admin-tahun-ajar');
+
+    if (elNamaSekolah) elNamaSekolah.value = activeDataSekolah.namaSekolah;
+    if (elNamaLomba) elNamaLomba.value = activeDataSekolah.namaLomba;
+    if (elSubjudul) elSubjudul.value = activeDataSekolah.subjudul;
+    if (elTahunAjar) elTahunAjar.value = activeDataSekolah.tahunAjar;
 
     renderAdminClassTable();
 }
 
 function renderAdminClassTable() {
+    if (!adminClassTableBody) return;
     adminClassTableBody.innerHTML = '';
     activeDaftarKelas.forEach((kelas) => {
         const tr = document.createElement('tr');
@@ -314,7 +328,7 @@ function renderAdminClassTable() {
                 renderAdminClassTable();
                 renderSidebarClasses();
                 renderDashboard();
-                showToast('Kelas berhasil dihapus & disinkronkan!', 'success');
+                showToast('Kelas berhasil dihapus & disinkronkan ke dashboard!', 'success');
             }
         });
     });
@@ -323,7 +337,7 @@ function renderAdminClassTable() {
 }
 
 function updateCurrentTotalScore() {
-    if (currentClassId) {
+    if (currentClassId && currentTotalScoreEl) {
         const totalScore = calculateTotalScore(currentClassId);
         currentTotalScoreEl.textContent = totalScore.toFixed(1);
     }
@@ -378,15 +392,20 @@ function openAdminPanel() {
 
 function handleAdminFormSubmit(e) {
     e.preventDefault();
-    activeDataSekolah.namaSekolah = document.getElementById('admin-nama-sekolah').value.trim();
-    activeDataSekolah.namaLomba = document.getElementById('admin-nama-lomba').value.trim();
-    activeDataSekolah.subjudul = document.getElementById('admin-subjudul').value.trim();
-    activeDataSekolah.tahunAjar = document.getElementById('admin-tahun-ajar').value.trim();
+    const elNamaSekolah = document.getElementById('admin-nama-sekolah');
+    const elNamaLomba = document.getElementById('admin-nama-lomba');
+    const elSubjudul = document.getElementById('admin-subjudul');
+    const elTahunAjar = document.getElementById('admin-tahun-ajar');
+
+    if (elNamaSekolah) activeDataSekolah.namaSekolah = elNamaSekolah.value.trim();
+    if (elNamaLomba) activeDataSekolah.namaLomba = elNamaLomba.value.trim();
+    if (elSubjudul) activeDataSekolah.subjudul = elSubjudul.value.trim();
+    if (elTahunAjar) activeDataSekolah.tahunAjar = elTahunAjar.value.trim();
 
     saveAdminConfig();
     renderHeaderInfo();
     renderDashboard();
-    showToast('Pengaturan identitas berhasil disimpan & disinkronkan ke dashboard!', 'success');
+    showToast('Identitas lembaga berhasil diperbarui & disinkronkan ke dashboard!', 'success');
 }
 
 function handleAddClass(e) {
@@ -435,7 +454,7 @@ function handleRubricChange(event) {
 }
 
 const debouncedSaveNotes = debounce(() => {
-    if (currentClassId) {
+    if (currentClassId && classNotesTextarea) {
         if (!classScoresData[currentClassId]) {
             classScoresData[currentClassId] = { scores: {}, notes: '' };
         }
@@ -466,7 +485,9 @@ function handleScoringFormSubmit(event) {
         return;
     }
 
-    classScoresData[currentClassId].notes = classNotesTextarea.value;
+    if (classNotesTextarea) {
+        classScoresData[currentClassId].notes = classNotesTextarea.value;
+    }
     classScoresData[currentClassId].lastUpdated = new Date().toISOString();
     saveScores(classScoresData);
     showToast('Penilaian berhasil disimpan & diperbarui di dashboard!', 'success');
@@ -501,11 +522,11 @@ function switchView(viewId) {
 }
 
 function toggleSidebar() {
-    appContainer.classList.toggle('sidebar-open');
+    if (appContainer) appContainer.classList.toggle('sidebar-open');
 }
 
 function closeSidebar() {
-    if (appContainer.classList.contains('sidebar-open')) {
+    if (appContainer && appContainer.classList.contains('sidebar-open')) {
         appContainer.classList.remove('sidebar-open');
     }
 }
@@ -529,7 +550,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (adminAuthForm) {
         adminAuthForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const pass = adminPasswordInput.value.trim();
+            const pass = adminPasswordInput ? adminPasswordInput.value.trim() : '';
             if (pass === 'admin123') {
                 isAdminAuthenticated = true;
                 if (adminAuthModal) adminAuthModal.style.display = 'none';
@@ -537,7 +558,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 openAdminPanel();
             } else {
                 showToast('Kata sandi salah! Coba "admin123"', 'danger');
-                adminPasswordInput.focus();
+                if (adminPasswordInput) adminPasswordInput.focus();
             }
         });
     }
