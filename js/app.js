@@ -9,7 +9,6 @@ let classScoresData = {};
 let currentClassId = null; 
 let activeDataSekolah = { ...DEFAULT_DATA_SEKOLAH };
 let activeDaftarKelas = [...DEFAULT_DAFTAR_KELAS];
-let isAdminAuthenticated = false;
 
 // --- DOM Elements ---
 const appContainer = document.querySelector('.app-container');
@@ -22,11 +21,12 @@ const appTitleEl = document.getElementById('app-title');
 const classListContainer = document.getElementById('class-list-container');
 const dashboardNavBtn = document.querySelector('.nav-item[data-target="dashboard"]');
 const adminNavBtn = document.getElementById('nav-btn-admin');
+const btnExport = document.getElementById('btn-export');
+
 const adminAuthModal = document.getElementById('admin-auth-modal');
 const adminAuthForm = document.getElementById('admin-auth-form');
 const adminPasswordInput = document.getElementById('admin-password-input');
 const btnCancelAuth = document.getElementById('btn-cancel-auth');
-const btnExport = document.getElementById('btn-export');
 
 const viewDashboard = document.getElementById('view-dashboard');
 const dashboardTitleEl = document.getElementById('dashboard-title');
@@ -367,27 +367,49 @@ function handleDashboardNavClick() {
 }
 
 function handleAdminNavClick() {
-    if (isAdminAuthenticated) {
-        openAdminPanel();
-    } else {
-        if (adminAuthModal) {
-            adminAuthModal.style.display = 'flex';
-            if (adminPasswordInput) {
-                adminPasswordInput.value = '';
-                adminPasswordInput.focus();
-            }
+    if (adminAuthModal) {
+        adminAuthModal.classList.remove('is-hidden');
+        adminAuthModal.setAttribute('aria-hidden', 'false');
+        adminAuthModal.style.display = 'flex';
+        if (adminPasswordInput) {
+            adminPasswordInput.value = '';
+            adminPasswordInput.focus();
         }
     }
     closeSidebar();
 }
 
-function openAdminPanel() {
-    currentClassId = null;
-    switchView('admin');
-    renderAdminSettings();
+function handleAdminAuthSubmit(e) {
+    e.preventDefault();
+    const password = adminPasswordInput ? adminPasswordInput.value.trim() : '';
+    if (password === 'admin123') {
+        if (adminAuthModal) {
+            adminAuthModal.classList.add('is-hidden');
+            adminAuthModal.setAttribute('aria-hidden', 'true');
+            adminAuthModal.style.display = 'none';
+        }
+        currentClassId = null;
+        switchView('admin');
+        renderAdminSettings();
 
-    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-    if (adminNavBtn) adminNavBtn.classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        if (adminNavBtn) adminNavBtn.classList.add('active');
+        showToast('Autentikasi admin berhasil. Selamat datang di Panel Admin!', 'success');
+    } else {
+        showToast('Kata sandi salah! Sandi default adalah admin123.', 'danger');
+        if (adminPasswordInput) {
+            adminPasswordInput.value = '';
+            adminPasswordInput.focus();
+        }
+    }
+}
+
+function handleCancelAuth() {
+    if (adminAuthModal) {
+        adminAuthModal.classList.add('is-hidden');
+        adminAuthModal.setAttribute('aria-hidden', 'true');
+        adminAuthModal.style.display = 'none';
+    }
 }
 
 function handleAdminFormSubmit(e) {
@@ -546,28 +568,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (dashboardNavBtn) dashboardNavBtn.addEventListener('click', handleDashboardNavClick);
     if (adminNavBtn) adminNavBtn.addEventListener('click', handleAdminNavClick);
-    
-    if (adminAuthForm) {
-        adminAuthForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const pass = adminPasswordInput ? adminPasswordInput.value.trim() : '';
-            if (pass === 'admin123') {
-                isAdminAuthenticated = true;
-                if (adminAuthModal) adminAuthModal.style.display = 'none';
-                showToast('Autentikasi admin berhasil!', 'success');
-                openAdminPanel();
-            } else {
-                showToast('Kata sandi salah! Coba "admin123"', 'danger');
-                if (adminPasswordInput) adminPasswordInput.focus();
-            }
-        });
-    }
 
-    if (btnCancelAuth && adminAuthModal) {
-        btnCancelAuth.addEventListener('click', () => {
-            adminAuthModal.style.display = 'none';
-        });
-    }
+    if (adminAuthForm) adminAuthForm.addEventListener('submit', handleAdminAuthSubmit);
+    if (btnCancelAuth) btnCancelAuth.addEventListener('click', handleCancelAuth);
 
     if (adminConfigForm) adminConfigForm.addEventListener('submit', handleAdminFormSubmit);
     if (btnAddClass) btnAddClass.addEventListener('click', handleAddClass);

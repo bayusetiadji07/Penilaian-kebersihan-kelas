@@ -144,7 +144,7 @@ export const RUBRIK_PENILAIAN = [
       {
         id: "sudut_baca_kreativitas",
         nama: "Kreativitas Sudut Baca & Dekorasi Edukatif",
-        keterangan: "Adanya pojoan baca yang rapi/kreativitas hasil karya siswa yang bermanfaat.",
+        keterangan: "Adanya pojok baca yang rapi/kreativitas hasil karya siswa yang bermanfaat.",
         skala: {
           1: "Tidak ada sudut baca atau dekorasi sama sekali.",
           2: "Ada sudut baca tetapi berdebu dan buku tidak tertata.",
@@ -160,16 +160,16 @@ export const TEKS_UX = {
   panduanPenjuryan: {
     judul: "Ringkasan Penilaian & Peringkat Kelas",
     petunjuk: [
-      "Ketuk salah satu kelas pada daftar menu di sebelah kiri untuk mulai melakukan penilaian langsung.",
-      "Berikan skor secara objektif berdasarkan kondisi nyata di ruang kelas.",
-      "Hasil rekapitulasi peringkat akan diperbarui secara otomatis setiap kali nilai disimpan."
+      "Halaman utama menampilkan Dashboard Ringkasan secara langsung saat aplikasi dibuka.",
+      "Ketuk salah satu kelas pada daftar menu di sebelah kiri untuk mulai melakukan penilaian.",
+      "Hasil perubahan di Panel Admin akan langsung tersinkronisasi ke Dashboard secara real-time."
     ]
   },
   panduanAdmin: {
     judul: "Panel Pengaturan & Manajemen Kelas",
     petunjuk: [
-      "Sesuaikan nama lembaga, judul perlombaan, serta tahun ajaran aktif dengan mudah.",
-      "Tambahkan rombongan belajar baru atau kelola daftar kelas yang terdaftar dalam kompetisi.",
+      "Panel Admin hanya muncul ketika dipilih melalui menu sidebar dan melewati verifikasi sandi.",
+      "Setiap perubahan Nama Sekolah, Judul Lomba, Tahun Ajaran, atau Daftar Kelas akan otomatis memperbarui Dashboard utama secara real-time.",
       "Seluruh perubahan data akan tersimpan aman secara otomatis di perangkat ini."
     ]
   },

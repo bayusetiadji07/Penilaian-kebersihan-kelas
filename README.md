@@ -5,41 +5,38 @@ Aplikasi web interaktif untuk penilaian lomba kebersihan dan kerapian kelas seca
 ---
 
 ## ✨ Fitur Utama
-1. **Rubrik Penilaian Terstruktur (Bobot & Skala 1-4):**
+1. **Dashboard sebagai Halaman Utama:** Saat aplikasi dibuka, halaman awal langsung menampilkan Dashboard ringkasan peringkat dan statistik penilaian secara transparan.
+2. **Rubrik Penilaian Terstruktur (Bobot & Skala 1-4):**
    - Kebersihan Lantai & Kolong Meja (Bobot 30%)
    - Kerapian Perabot, Dinding & Jendela (Bobot 25%)
    - Sanitasi & Pengelolaan Sampah (Bobot 25%)
    - Atribut Kelas & Sudut Edukasi (Bobot 20%)
-2. **Papan Peringkat Real-Time (Leaderboard):** Otomatis menghitung skor akhir berdasarkan bobot kategori dan mengelompokkan predikat juara secara transparan.
-3. **Panel Pengaturan Admin Berproteksi Sandi:** Halaman khusus administrator yang dilindungi kata sandi (`admin123`) untuk mengubah identitas sekolah, nama lomba, subjudul, tahun ajaran, serta menambah/menghapus daftar kelas. Setiap perubahan langsung tersinkronisasi ke halaman utama.
-4. **Penyimpanan Lokal Persisten:** Data nilai dan pengaturan tersimpan aman di browser (*localStorage*) sehingga tidak akan hilang saat berpindah halaman atau me-refresh aplikasi.
-5. **Dukungan Offline-First (PWA):** Dapat diinstal dan digunakan tanpa koneksi internet saat juri berkeliling ke ruang-ruang kelas.
-6. **Ekspor Data Rekapitulasi:** Unduh hasil penilaian seluruh kelas dalam format CSV untuk dilaporkan kepada pihak sekolah.
+3. **Papan Peringkat & Sinkronisasi Real-Time:** Otomatis menghitung skor akhir berdasarkan bobot kategori. Setiap perubahan yang dilakukan pada Panel Pengaturan Admin langsung tersinkronisasi ke dashboard dan sidebar tanpa perlu memuat ulang halaman.
+4. **Panel Pengaturan Admin Berproteksi Sandi:** Halaman khusus administrator yang dilindungi kata sandi (`admin123`) dan hanya muncul saat dipilih melalui menu navigasi sidebar. Digunakan untuk mengubah identitas sekolah, nama lomba, subjudul, tahun ajaran, serta menambah/menghapus daftar kelas.
+5. **Penyimpanan Lokal Persisten:** Data nilai dan pengaturan tersimpan aman di browser (*localStorage*) sehingga tidak akan hilang saat berpindah halaman atau me-refresh aplikasi.
+6. **Dukungan Offline-First (PWA) & Ekspor CSV:** Dapat diinstal dan digunakan tanpa koneksi internet serta mendukung ekspor rekapitulasi penilaian dalam format CSV.
 
 ---
 
 ## 📱 Panduan Penggunaan untuk Juri & Panitia
 
-### 1. Cara Memulai Penilaian
-- Buka aplikasi di browser (Desktop maupun Smartphone).
+### 1. Navigasi Awal & Dashboard
+- Saat pertama kali membuka aplikasi, Anda akan langsung disajikan **Dashboard Ringkasan** yang menampilkan statistik kelas dinilai dan papan peringkat sementara.
+- Panel Admin disembunyikan secara default dan hanya dapat diakses melalui tombol **Pengaturan Admin** di sidebar.
+
+### 2. Cara Memulai Penilaian Kelas
 - Pada menu **Daftar Kelas** di bilah sisi (*sidebar*) sebelah kiri, pilih kelas yang akan dinilai (contoh: *Kelas 7A*, *8B*, dll.).
 - Halaman penilaian khusus kelas tersebut akan terbuka dengan rubrik lengkap.
+- Amati kondisi kelas secara objektif dan pilih skor dari **1** hingga **4**, lalu klik **Simpan Penilaian Kelas**. Hasilnya langsung memperbarui dashboard.
 
-### 2. Mengisi Skor Rubrik
-- Untuk setiap kriteria, amati kondisi kelas secara objektif dan pilih skor dari **1 (Perlu Peningkatan)** hingga **4 (Sangat Baik / Sempurna)** berdasarkan panduan skala yang tersedia.
-- Total skor sementara akan dihitung secara langsung di bagian atas layar.
-- Berikan catatan atau saran membangun pada kolom catatan di bagian bawah formulir.
-- Klik tombol **Simpan Penilaian Kelas**.
+### 3. Menggunakan Panel Pengaturan Admin & Sinkronisasi Real-Time
+- Klik menu **Pengaturan Admin** pada bagian navigasi utama di bilah sisi.
+- Masukkan kata sandi administrator (`admin123`) pada kotak dialog autentikasi yang muncul, lalu klik **Masuk Admin**.
+- **Identitas Lembaga & Lomba:** Ubah Nama Sekolah, Nama Lomba, Subjudul, atau Tahun Ajaran sesuai kebutuhan, lalu klik **Simpan Perubahan Identitas**. Perubahan akan langsung terlihat di header, banner dashboard, dan seluruh halaman secara real-time.
+- **Manajemen Daftar Kelas:** Tambahkan kelas baru atau hapus kelas yang ada dari daftar aktif. Perubahan daftar kelas akan langsung memperbarui menu navigasi sidebar, tabel leaderboard, dan statistik rekapitulasi secara otomatis.
 
-### 3. Menggunakan Panel Pengaturan Admin (Berproteksi Kata Sandi)
-- Klik menu **Pengaturan Admin** pada bagian navigasi utama di bilah sisi (*sidebar*).
-- Masukkan kata sandi administrator pada kotak dialog autentikasi yang muncul (Sandi default: `admin123`), lalu klik **Masuk Admin**.
-- **Identitas Lembaga & Lomba:** Ubah Nama Sekolah, Nama Lomba, Subjudul, atau Tahun Ajaran sesuai kebutuhan kegiatan Anda, lalu klik **Simpan Perubahan Identitas**. Perubahan akan langsung terlihat di halaman utama aplikasi secara real-time.
-- **Manajemen Daftar Kelas:** Isi formulir "Tambah Kelas Baru" dengan memasukkan Nama Kelas, Nama Wali Kelas, Zona/Gedung, serta Tingkat, lalu klik **Tambah Kelas ke Daftar**. Kelas baru akan langsung muncul di daftar navigasi sidebar dan dashboard penilaian. Anda juga dapat menghapus kelas dari tabel daftar aktif jika diperlukan.
-
-### 4. Memantau Peringkat & Ekspor
-- Kembali ke menu **Dashboard Ringkasan** untuk melihat peringkat sementara seluruh kelas secara real-time.
-- Klik tombol **Ekspor Rekap CSV** di bagian bawah bilah sisi untuk mengunduh rekapitulasi penilaian.
+### 4. Ekspor Data Rekapitulasi
+- Klik tombol **Ekspor Rekap CSV** di bagian bawah bilah sisi untuk mengunduh rekapitulasi penilaian seluruh kelas dalam format CSV.
 
 ---
 
